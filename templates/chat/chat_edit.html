@@ -1,0 +1,17 @@
+<form method="post"
+      hx-post="{% url 'chat:chat_update' chat.id %}"
+      hx-target="#chat-{{ chat.id }}"
+      hx-swap="outerHTML">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
+        <i class="fas fa-save"></i> Save
+    </button>
+</form>
+
+<script>
+    htmx.on('chatUpdated', (event) => {
+        const url = event.detail.url;
+        htmx.ajax('GET', url, '#chat-container');
+    });
+</script>

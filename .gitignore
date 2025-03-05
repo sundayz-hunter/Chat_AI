@@ -1,0 +1,38 @@
+# Sensitive configuration files
+.env
+
+# Virtual environments
+venv/
+env/
+.venv/
+.env/
+
+# Database files
+*.sqlite3
+*.db
+
+# Mediafiles
+media/
+media-private/
+
+# IDE
+.idea/
+.vscode/
+
+# Python cache files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Log files
+*.log
+
+# Installed dependencies
+*.egg-info/
+dist/
+build/
+
+# Operating system files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,100 @@
+<!-- Chat section -->
+<div class="card shadow-lg">
+    <div class="card-header bg-secondary text-white">
+        <h4><i class="fas fa-comment-dots"></i> {{ chat.name }}</h4>
+    </div>
+
+    <div class="card-body overflow-auto">
+        <div id="chat-box" class="p-1">
+            {% for msg in messages_chat %}
+            <div class="alert alert-primary border-start border-primary px-3">
+                <i class="fas fa-user"></i> : {{ msg.message }}
+            </div>
+            <div class="alert alert-success border-start border-success px-3">
+                <i class="fas fa-robot"></i> : {{ msg.response|safe }}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Chat input -->
+    <div class="card-footer">
+        <form id="chat-form" class="d-flex">
+            <div class="input-group">
+                <div id="typing-indicator" class="text-center fw-bold d-none p-2">
+                    <i class="fas fa-circle-notch fa-spin"></i> AI is typing...
+                </div>
+                <input type="text" id="message-input" class="form-control" placeholder="Write a message..." required>
+                <button id="chat_submit" type="submit" class="btn btn-primary">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- WebSocket Script -->
+<script>
+    var chatSocket = null;
+    var messageInput = document.getElementById("message-input");
+    var chatBox = document.getElementById("chat-box");
+    var typingIndicator = document.getElementById("typing-indicator");
+    var chatSubmit = document.getElementById("chat_submit");
+    var currentAiMessage = null;
+
+    function openWebSocket() {
+        if (chatSocket !== null) {
+            chatSocket.close();
+        }
+
+        chatSocket = new WebSocket("ws://" + window.location.host + "/ws/chat/{{ chat.id }}/");
+
+        chatSocket.onopen = function () {
+            console.log("WebSocket opened.");
+        };
+
+        chatSocket.onmessage = function (e) {
+            var data = JSON.parse(e.data);
+
+            if (data.sender === "user") {
+                chatBox.innerHTML += `<div class="alert alert-primary border-start border-primary px-3">
+                    <i class="fas fa-user"></i> You: ${data.message}
+                </div>`;
+            } else if (data.sender === "ai") {
+                typingIndicator.classList.remove("d-none");
+                chatSubmit.disabled = true;
+
+                if (!currentAiMessage) {
+                    currentAiMessage = document.createElement("div");
+                    currentAiMessage.className = "alert alert-success border-start border-success px-3";
+                    currentAiMessage.innerHTML = `<i class="fas fa-robot"></i> AI: <span>${data.message}</span>`;
+                    chatBox.appendChild(currentAiMessage);
+                } else {
+                    currentAiMessage.querySelector("span").innerHTML = data.message;
+                }
+            }
+
+            chatBox.scrollTop = chatBox.scrollHeight;
+        };
+
+        chatSocket.onclose = function () {
+            console.log("WebSocket closed.");
+            typingIndicator.classList.add("d-none");
+            chatSubmit.disabled = false;
+        };
+    }
+
+    document.getElementById("chat-form").onsubmit = function (event) {
+        event.preventDefault();
+
+        openWebSocket();
+
+        chatSocket.onopen = function () {
+            chatSocket.send(JSON.stringify({ "message": messageInput.value }));
+            messageInput.value = "";
+            typingIndicator.classList.remove("d-none");
+            chatSubmit.disabled = true;
+            currentAiMessage = null;
+        };
+    };
+</script>

@@ -1,0 +1,18 @@
+<form id="createChatForm" method="post"
+      hx-post="{% url 'chat:chat_create' %}"
+      hx-target=".list-group li:first-child"
+      hx-swap="beforebegin"
+      hx-on::after-request="this.reset()">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary w-100 mt-3" data-bs-dismiss="modal">
+        <i class="fas fa-save"></i> Save
+    </button>
+</form>
+
+<script>
+    htmx.on('chatCreated', (event) => {
+        const url = event.detail.url;
+        htmx.ajax('GET', url, '#chat-container');
+    });
+</script>

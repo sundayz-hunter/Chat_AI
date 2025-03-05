@@ -1,0 +1,27 @@
+<li class="list-group-item d-flex justify-content-between align-items-center" id="chat-{{ chat.id }}">
+    <a href="#" class="text-decoration-none text-dark"
+       hx-get="{% url 'chat:chat' chat.id %}"
+       hx-target="#chat-container"
+       hx-swap="innerHTML">
+        <i class="fas fa-comments text-primary"></i> {{ chat.name }}
+    </a>
+    <div>
+        <button class="btn btn-outline-warning btn-sm" data-bs-toggle="modal"
+                data-bs-target="#editChatModal"
+                hx-get="{% url 'chat:chat_update' chat.id %}"
+                hx-target="#editChatModal .modal-body"
+                hx-swap="innerHTML">
+            <i class="fas fa-edit"></i>
+        </button>
+
+        <button class="btn btn-outline-danger btn-sm" data-bs-toggle="modal"
+                data-bs-target="#deleteChatModal"
+                hx-get="{% url 'chat:chat_delete' chat.id %}"
+                hx-target="#deleteChatModal .modal-body"
+                hx-swap="innerHTML">
+            <i class="fas fa-trash"></i>
+        </button>
+    </div>
+</li>
+
+
