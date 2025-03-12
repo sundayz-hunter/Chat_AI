@@ -1,7 +1,7 @@
 import json
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views import View
@@ -35,7 +35,7 @@ class ChatCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         self.object = form.save()
-        if self.request.headers.get("HX-Request"):
+        if self.request.htmx:
             response = render(self.request, "chat/partials_chat_row.html", {'chat': self.object})
             response['HX-Trigger'] = json.dumps({
                 'chatCreated': {
@@ -57,7 +57,7 @@ class ChatUpdateView(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         chat = form.save()
-        if self.request.headers.get("HX-Request"):
+        if self.request.htmx:
             response = render(self.request, "chat/partials_chat_row.html", {"chat": chat})
             response['HX-Trigger'] = json.dumps({
                 'chatUpdated': {
@@ -79,7 +79,7 @@ class ChatDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         chat = self.get_object()
         response = super().delete(request, *args, **kwargs)
-        if request.headers.get("HX-Request"):
+        if self.request.htmx:
             response = HttpResponse("")
             response["HX-Trigger"] = json.dumps({
                 "chatDeleted": {
