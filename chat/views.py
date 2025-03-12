@@ -39,7 +39,8 @@ class ChatCreateView(LoginRequiredMixin, CreateView):
             response = render(self.request, "chat/partials_chat_row.html", {'chat': self.object})
             response['HX-Trigger'] = json.dumps({
                 'chatCreated': {
-                    'url': reverse('chat:chat', args=[self.object.id])
+                    'url': reverse('chat:chat', args=[self.object.id]),
+                    'chatId': self.object.id
                 }
             })
             return response
@@ -58,10 +59,12 @@ class ChatUpdateView(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         chat = form.save()
         if self.request.htmx:
+            print(self.object.id)
             response = render(self.request, "chat/partials_chat_row.html", {"chat": chat})
             response['HX-Trigger'] = json.dumps({
                 'chatUpdated': {
-                    'url': reverse('chat:chat', args=[chat.id])
+                    'url': reverse('chat:chat', args=[chat.id]),
+                    'chatId': chat.id
                 }
             })
             return response
@@ -98,4 +101,14 @@ class ChatView(LoginRequiredMixin, View):
         chat = get_object_or_404(Chat, id=chat_id, user=request.user)
         messages = chat.chatmessage_set.all().order_by("timestamp")
         chats = Chat.objects.filter(user=request.user).order_by("-created_at")
+
+        if self.request.htmx:
+            response = render(request, self.template_name,{"chat": chat, "messages_chat": messages, "chats": chats})
+            response['HX-Trigger'] = json.dumps({
+                'updateID': {
+                    'chatId': chat_id
+                }
+            })
+            return response
+
         return render(request, self.template_name,{"chat": chat, "messages_chat": messages, "chats": chats})

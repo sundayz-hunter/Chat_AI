@@ -12,6 +12,10 @@
 <script>
     htmx.on('chatUpdated', (event) => {
         const url = event.detail.url;
-        htmx.ajax('GET', url, '#chat-container');
+        const chatId = event.detail.chatId;
+        const currentChatId = parseInt(document.querySelector("#chat-container").getAttribute("data-chat-id"));
+        if (chatId === currentChatId) {
+            htmx.ajax('GET', url, '#chat-container');
+        }
     });
 </script>
