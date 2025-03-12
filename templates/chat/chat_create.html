@@ -12,7 +12,14 @@
 
 <script>
     htmx.on('chatCreated', (event) => {
+        const chatId = event.detail.chatId;
+        document.getElementById('chat-container').setAttribute('data-chat-id', chatId);
         const url = event.detail.url;
         htmx.ajax('GET', url, '#chat-container');
+    });
+
+    htmx.on('updateID', (event) => {
+        const chatId = event.detail.chatId;
+        document.getElementById('chat-container').setAttribute('data-chat-id', chatId);
     });
 </script>
