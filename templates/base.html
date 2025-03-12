@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 {% load static %}
+{% load django_htmx %}
 <html lang="us">
 <head>
     <meta charset="UTF-8">
@@ -11,7 +12,7 @@
     <!-- FontAwesome (Icônes) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <!-- HTMX  -->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="{% static 'js/htmx.min.js' %}" defer></script>
 </head>
 <body class="bg-light" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
 
@@ -27,22 +28,22 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav ms-auto">
                 {% if user.is_authenticated %}
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'user:logout' %}">
-                        <i class="fas fa-sign-out-alt"></i> Logout
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'user:logout' %}">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </a>
+                    </li>
                 {% else %}
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'user:login' %}">
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{% url 'user:signup' %}">
-                        <i class="fas fa-user-plus"></i> Signup
-                    </a>
-                </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'user:login' %}">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-semibold" href="{% url 'user:signup' %}">
+                            <i class="fas fa-user-plus"></i> Signup
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
         </div>
